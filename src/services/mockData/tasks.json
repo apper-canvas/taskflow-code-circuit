@@ -1,0 +1,90 @@
+[
+  {
+    "Id": 1,
+    "title": "Complete project proposal",
+    "description": "Finish the Q4 project proposal document and submit for review",
+    "priority": "high",
+    "category": "Work",
+    "dueDate": "2024-01-15",
+    "completed": false,
+    "completedAt": null,
+    "createdAt": "2024-01-10T09:00:00Z"
+  },
+  {
+    "Id": 2,
+    "title": "Review team performance",
+    "description": "Conduct quarterly performance reviews for team members",
+    "priority": "medium",
+    "category": "Work",
+    "dueDate": "2024-01-20",
+    "completed": false,
+    "completedAt": null,
+    "createdAt": "2024-01-10T10:30:00Z"
+  },
+  {
+    "Id": 3,
+    "title": "Grocery shopping",
+    "description": "Buy groceries for the week including fresh vegetables and pantry items",
+    "priority": "low",
+    "category": "Personal",
+    "dueDate": "2024-01-14",
+    "completed": true,
+    "completedAt": "2024-01-13T16:45:00Z",
+    "createdAt": "2024-01-10T11:15:00Z"
+  },
+  {
+    "Id": 4,
+    "title": "Morning workout",
+    "description": "30-minute cardio session and strength training",
+    "priority": "medium",
+    "category": "Health",
+    "dueDate": "2024-01-14",
+    "completed": true,
+    "completedAt": "2024-01-14T07:30:00Z",
+    "createdAt": "2024-01-10T12:00:00Z"
+  },
+  {
+    "Id": 5,
+    "title": "Client presentation",
+    "description": "Present new design concepts to the client meeting",
+    "priority": "urgent",
+    "category": "Work",
+    "dueDate": "2024-01-16",
+    "completed": false,
+    "completedAt": null,
+    "createdAt": "2024-01-10T13:45:00Z"
+  },
+  {
+    "Id": 6,
+    "title": "Book dentist appointment",
+    "description": "Schedule routine dental cleaning and checkup",
+    "priority": "low",
+    "category": "Health",
+    "dueDate": "2024-01-25",
+    "completed": false,
+    "completedAt": null,
+    "createdAt": "2024-01-10T14:20:00Z"
+  },
+  {
+    "Id": 7,
+    "title": "Update portfolio website",
+    "description": "Add latest projects and update contact information",
+    "priority": "medium",
+    "category": "Personal",
+    "dueDate": "2024-01-22",
+    "completed": false,
+    "completedAt": null,
+    "createdAt": "2024-01-10T15:30:00Z"
+  },
+  {
+    "Id": 8,
+    "title": "Team standup meeting",
+    "description": "Daily standup with development team",
+    "priority": "high",
+    "category": "Work",
+    "dueDate": "2024-01-14",
+    "completed": false,
+    "completedAt": null,
+    "createdAt": "2024-01-10T16:00:00Z"
+  }
+]
