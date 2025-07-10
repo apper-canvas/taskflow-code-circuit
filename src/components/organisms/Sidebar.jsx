@@ -85,12 +85,12 @@ const Sidebar = ({ isOpen, onClose }) => {
   // Desktop Sidebar
   const DesktopSidebar = () => (
     <div className="hidden lg:block w-64 bg-white border-r border-gray-200 h-full">
-      <div className="p-6">
+<div className="p-6">
         <div className="flex items-center space-x-3 mb-8">
           <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
             <ApperIcon name="CheckSquare" className="h-5 w-5 text-white" />
           </div>
-          <h1 className="text-xl font-display font-bold gradient-text">TaskFlow</h1>
+          <h1 className="text-xl font-display font-bold gradient-text">TaskFlow Pro</h1>
         </div>
 
         <nav className="space-y-2">
@@ -139,13 +139,13 @@ const Sidebar = ({ isOpen, onClose }) => {
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="p-6">
+<div className="p-6">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
                 <ApperIcon name="CheckSquare" className="h-5 w-5 text-white" />
               </div>
-              <h1 className="text-xl font-display font-bold gradient-text">TaskFlow</h1>
+              <h1 className="text-xl font-display font-bold gradient-text">TaskFlow Pro</h1>
             </div>
             <button
               onClick={onClose}
