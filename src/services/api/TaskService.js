@@ -1,137 +1,478 @@
-import tasksData from "@/services/mockData/tasks.json";
+import { toast } from "react-toastify";
 import { format, isToday, parseISO } from "date-fns";
 
 class TaskService {
   constructor() {
-    this.tasks = [...tasksData];
+    this.tableName = "task_c";
+    this.apperClient = null;
+    this.initializeClient();
+  }
+
+  initializeClient() {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      this.apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+    } catch (error) {
+      console.error("Error initializing ApperClient:", error);
+    }
   }
 
   async getAll() {
-    await this.delay();
-    return [...this.tasks].sort((a, b) => {
-      if (a.completed !== b.completed) {
-        return a.completed ? 1 : -1;
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "title_c" } },
+          { field: { Name: "description_c" } },
+          { field: { Name: "priority_c" } },
+          { field: { Name: "due_date_c" } },
+          { field: { Name: "completed_c" } },
+          { field: { Name: "completed_at_c" } },
+          { field: { Name: "created_at_c" } },
+          { field: { Name: "category_c" } }
+        ],
+        orderBy: [
+          { fieldName: "completed_c", sorttype: "ASC" },
+          { fieldName: "priority_c", sorttype: "ASC" }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
       }
-      const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
-      return priorityOrder[a.priority] - priorityOrder[b.priority];
-    });
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching tasks:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
   async getById(id) {
-    await this.delay();
-    return this.tasks.find(task => task.Id === parseInt(id));
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "title_c" } },
+          { field: { Name: "description_c" } },
+          { field: { Name: "priority_c" } },
+          { field: { Name: "due_date_c" } },
+          { field: { Name: "completed_c" } },
+          { field: { Name: "completed_at_c" } },
+          { field: { Name: "created_at_c" } },
+          { field: { Name: "category_c" } }
+        ]
+      };
+
+      const response = await this.apperClient.getRecordById(this.tableName, parseInt(id), params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching task with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
   }
 
   async getTodayTasks() {
-    await this.delay();
-    const today = new Date();
-    return this.tasks.filter(task => {
-      if (!task.dueDate) return false;
-      return isToday(parseISO(task.dueDate));
-    }).sort((a, b) => {
-      if (a.completed !== b.completed) {
-        return a.completed ? 1 : -1;
+    try {
+      const todayStr = format(new Date(), "yyyy-MM-dd");
+      
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "title_c" } },
+          { field: { Name: "description_c" } },
+          { field: { Name: "priority_c" } },
+          { field: { Name: "due_date_c" } },
+          { field: { Name: "completed_c" } },
+          { field: { Name: "completed_at_c" } },
+          { field: { Name: "created_at_c" } },
+          { field: { Name: "category_c" } }
+        ],
+        where: [
+          {
+            FieldName: "due_date_c",
+            Operator: "EqualTo",
+            Values: [todayStr]
+          }
+        ],
+        orderBy: [
+          { fieldName: "completed_c", sorttype: "ASC" },
+          { fieldName: "priority_c", sorttype: "ASC" }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
       }
-      const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
-      return priorityOrder[a.priority] - priorityOrder[b.priority];
-    });
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching today's tasks:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
   async getCompletedTasks() {
-    await this.delay();
-    return this.tasks.filter(task => task.completed)
-      .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "title_c" } },
+          { field: { Name: "description_c" } },
+          { field: { Name: "priority_c" } },
+          { field: { Name: "due_date_c" } },
+          { field: { Name: "completed_c" } },
+          { field: { Name: "completed_at_c" } },
+          { field: { Name: "created_at_c" } },
+          { field: { Name: "category_c" } }
+        ],
+        where: [
+          {
+            FieldName: "completed_c",
+            Operator: "EqualTo",
+            Values: ["true"]
+          }
+        ],
+        orderBy: [
+          { fieldName: "completed_at_c", sorttype: "DESC" }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching completed tasks:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
   async getPendingTasks() {
-    await this.delay();
-    return this.tasks.filter(task => !task.completed)
-      .sort((a, b) => {
-        const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-      });
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "title_c" } },
+          { field: { Name: "description_c" } },
+          { field: { Name: "priority_c" } },
+          { field: { Name: "due_date_c" } },
+          { field: { Name: "completed_c" } },
+          { field: { Name: "completed_at_c" } },
+          { field: { Name: "created_at_c" } },
+          { field: { Name: "category_c" } }
+        ],
+        where: [
+          {
+            FieldName: "completed_c",
+            Operator: "EqualTo",
+            Values: ["false"]
+          }
+        ],
+        orderBy: [
+          { fieldName: "priority_c", sorttype: "ASC" }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching pending tasks:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
-  async getByCategory(category) {
-    await this.delay();
-    return this.tasks.filter(task => task.category === category)
-      .sort((a, b) => {
-        if (a.completed !== b.completed) {
-          return a.completed ? 1 : -1;
-        }
-        const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-      });
+  async getByCategory(categoryId) {
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "title_c" } },
+          { field: { Name: "description_c" } },
+          { field: { Name: "priority_c" } },
+          { field: { Name: "due_date_c" } },
+          { field: { Name: "completed_c" } },
+          { field: { Name: "completed_at_c" } },
+          { field: { Name: "created_at_c" } },
+          { field: { Name: "category_c" } }
+        ],
+        where: [
+          {
+            FieldName: "category_c",
+            Operator: "EqualTo",
+            Values: [parseInt(categoryId)]
+          }
+        ],
+        orderBy: [
+          { fieldName: "completed_c", sorttype: "ASC" },
+          { fieldName: "priority_c", sorttype: "ASC" }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching tasks by category:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
   async create(taskData) {
-    await this.delay();
-    const newTask = {
-      Id: this.getNextId(),
-      title: taskData.title,
-      description: taskData.description || "",
-      priority: taskData.priority || "medium",
-      category: taskData.category || "Personal",
-      dueDate: taskData.dueDate || null,
-      completed: false,
-      completedAt: null,
-      createdAt: new Date().toISOString()
-    };
-    this.tasks.unshift(newTask);
-    return { ...newTask };
+    try {
+      const params = {
+        records: [
+          {
+            Name: taskData.title,
+            title_c: taskData.title,
+            description_c: taskData.description || "",
+            priority_c: taskData.priority || "medium",
+            due_date_c: taskData.dueDate || null,
+            completed_c: "false",
+            completed_at_c: null,
+            created_at_c: new Date().toISOString(),
+            category_c: taskData.category ? parseInt(taskData.category) : null
+          }
+        ]
+      };
+
+      const response = await this.apperClient.createRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create tasks ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          
+          failedRecords.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successfulRecords.length > 0 ? successfulRecords[0].data : null;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating task:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
   }
 
   async update(id, taskData) {
-    await this.delay();
-    const taskIndex = this.tasks.findIndex(task => task.Id === parseInt(id));
-    if (taskIndex === -1) {
-      throw new Error("Task not found");
+    try {
+      const params = {
+        records: [
+          {
+            Id: parseInt(id),
+            Name: taskData.title,
+            title_c: taskData.title,
+            description_c: taskData.description || "",
+            priority_c: taskData.priority || "medium",
+            due_date_c: taskData.dueDate || null,
+            category_c: taskData.category ? parseInt(taskData.category) : null
+          }
+        ]
+      };
+
+      const response = await this.apperClient.updateRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+        
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update tasks ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating task:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
     }
-    
-    const updatedTask = {
-      ...this.tasks[taskIndex],
-      ...taskData,
-      Id: parseInt(id)
-    };
-    
-    this.tasks[taskIndex] = updatedTask;
-    return { ...updatedTask };
   }
 
   async delete(id) {
-    await this.delay();
-    const taskIndex = this.tasks.findIndex(task => task.Id === parseInt(id));
-    if (taskIndex === -1) {
-      throw new Error("Task not found");
+    try {
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
+
+      const response = await this.apperClient.deleteRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return false;
+      }
+
+      if (response.results) {
+        const successfulDeletions = response.results.filter(result => result.success);
+        const failedDeletions = response.results.filter(result => !result.success);
+        
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete tasks ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
+          
+          failedDeletions.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successfulDeletions.length > 0;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting task:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return false;
     }
-    this.tasks.splice(taskIndex, 1);
-    return true;
   }
 
   async toggleComplete(id) {
-    await this.delay();
-    const taskIndex = this.tasks.findIndex(task => task.Id === parseInt(id));
-    if (taskIndex === -1) {
-      throw new Error("Task not found");
+    try {
+      // First get the current task to check its completion status
+      const currentTask = await this.getById(id);
+      if (!currentTask) {
+        throw new Error("Task not found");
+      }
+
+      const isCurrentlyCompleted = currentTask.completed_c === "true" || currentTask.completed_c === true;
+      const newCompletedStatus = !isCurrentlyCompleted;
+
+      const params = {
+        records: [
+          {
+            Id: parseInt(id),
+            completed_c: newCompletedStatus.toString(),
+            completed_at_c: newCompletedStatus ? new Date().toISOString() : null
+          }
+        ]
+      };
+
+      const response = await this.apperClient.updateRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+        
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to toggle task completion ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error toggling task completion:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
     }
-    
-    const task = this.tasks[taskIndex];
-    const updatedTask = {
-      ...task,
-      completed: !task.completed,
-      completedAt: !task.completed ? new Date().toISOString() : null
-    };
-    
-    this.tasks[taskIndex] = updatedTask;
-    return { ...updatedTask };
-  }
-
-  getNextId() {
-    return Math.max(...this.tasks.map(task => task.Id), 0) + 1;
-  }
-
-  async delay() {
-    return new Promise(resolve => setTimeout(resolve, 300));
   }
 }
 

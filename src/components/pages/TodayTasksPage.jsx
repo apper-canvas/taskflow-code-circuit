@@ -9,12 +9,12 @@ const TodayTasksPage = () => {
   const { searchTerm } = useOutletContext();
   const { tasks, loading, error, toggleComplete, updateTask, deleteTask, refetch } = useTasks("today");
 
-  const filteredTasks = useMemo(() => {
+const filteredTasks = useMemo(() => {
     if (!searchTerm) return tasks;
     return tasks.filter(task => 
-      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.category.toLowerCase().includes(searchTerm.toLowerCase())
+      (task.title_c || task.title || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (task.description_c || task.description || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (task.category_c?.Name || task.category || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [tasks, searchTerm]);
 

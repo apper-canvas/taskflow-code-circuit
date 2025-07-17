@@ -69,7 +69,7 @@ const TaskList = ({
   return (
     <div className="space-y-4">
       <AnimatePresence>
-        {tasks.map((task, index) => (
+{tasks.map((task, index) => (
           <motion.div
             key={task.Id}
             initial={{ opacity: 0, y: 20 }}

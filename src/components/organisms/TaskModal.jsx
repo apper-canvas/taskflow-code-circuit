@@ -28,14 +28,14 @@ const TaskModal = ({
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
+useEffect(() => {
     if (task && mode === "edit") {
       setFormData({
-        title: task.title || "",
-        description: task.description || "",
-        priority: task.priority || "medium",
-        category: task.category || "Personal",
-        dueDate: task.dueDate || ""
+        title: task.title_c || task.title || "",
+        description: task.description_c || task.description || "",
+        priority: task.priority_c || task.priority || "medium",
+        category: task.category_c?.Name || task.category || "Personal",
+        dueDate: task.due_date_c || task.dueDate || ""
       });
     } else {
       setFormData({
